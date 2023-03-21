@@ -5,6 +5,7 @@ FILE_PATH = "../geneva_320_data.txt"
 OUTPUT_FILE = "./geneva_output.csv"
 
 def next_word(line, running_offset):
+    """ Returns substring until next space char of line after running_offset index. """
     next_space_idx = line[running_offset:].find(" ") + running_offset
     if(next_space_idx == -1): 
         print("ERROR")
@@ -16,7 +17,9 @@ def next_word(line, running_offset):
 
 
 def parse_line(line):
-    """ Avg. Fitness 0.0: [TCP:options-sack:]-duplicate(duplicate(,duplicate),)-| \/  (Evaluated 12 times: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]) """   
+    """ Parses a single line of Geneva output.
+    Line Format: Avg. Fitness 0.0: [TCP:options-sack:]-duplicate(duplicate(,duplicate),)-| \/  (Evaluated 12 times: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]) 
+    """   
     running_offset = 0
 
     avg_str, running_offset = next_word(line, 0)
@@ -49,28 +52,11 @@ with open(FILE_PATH) as file:
         line = line.rstrip().replace("  ", " ")
         if(line != "Results:" and len(line) != 0): 
             fitness_num, strategy, evaluation_num, evaluations_arr = parse_line(line)
-            # data = {
-            #     'Avg. Fitness': fitness_num,
-            #     'Strategy DNA': strategy,
-            #     'Evaluation Num': evaluation_num,
-            #     'Evaluations': evaluations_arr
-            # }
-            # print(fitness_num, strategy, evaluation_num, evaluations_arr)
-            # indi_df1 = pd.DataFrame(data,
-            #        columns = ['Avg. Fitness', 'Strategy DNA', 'Evaluation Num', 'Evaluations'])
             df = df.append({
                 'Avg. Fitness' : fitness_num[:-1], 
                 'Strategy DNA' : strategy, 
                 'Evaluation Num' : evaluation_num,
                 'Evaluations' : evaluations_arr},
                 ignore_index = True)
-            # df.reset_index(drop=True, inplace=True)
-            # indi_df1.reset_index(drop=True, inplace=True)
-            # print(indi_df1)
-            # df = pd.concat([df, indi_df1], axis=1)
-            # new_df = pd.DataFrame([fitness_num, strategy, evaluation_num, evaluations_arr])
-            # df = pd.concat([df, new_df], axis=0, ignore_index=True)
-# print(OUTPUT_FILE)
-print(df)
 
 df.to_csv(OUTPUT_FILE, encoding='utf-8', index=False)
