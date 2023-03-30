@@ -6,10 +6,7 @@ folderName = "data/"
 fileNames = os.listdir(folderName)
 data = []
 
-i = 0
 for fileName in fileNames:
-    if i > 10: continue
-    i += 1
     file = open(folderName + fileName)
     lines = file.readlines()
     file.close()
