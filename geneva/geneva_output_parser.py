@@ -52,6 +52,8 @@ with open(FILE_PATH) as file:
         line = line.rstrip().replace("  ", " ")
         if(len(line) != 0 and line[0]=="A"):
             fitness_num, strategy, evaluation_num, evaluations_arr = parse_line(line)
+            evaluations_arr = [eval(i) for i in evaluations_arr]
+
             df = df.append({
                 'Avg. Fitness' : fitness_num[:-1],
                 'Strategy DNA' : strategy,
