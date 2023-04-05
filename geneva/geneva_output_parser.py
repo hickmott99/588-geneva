@@ -1,13 +1,13 @@
 import pandas as pd
 import time
 
-FILE_PATH = "./geneva/log_copy.txt"
-OUTPUT_FILE = "./geneva_output_eric1.csv"
+FILE_PATH = "./output_hickmott/idx-256.txt"
+OUTPUT_FILE = "./output_hickmott/idx-256.csv"
 
 def next_word(line, running_offset):
     """ Returns substring until next space char of line after running_offset index. """
     next_space_idx = line[running_offset:].find(" ") + running_offset
-    if(next_space_idx == -1): 
+    if(next_space_idx == -1):
         print("ERROR")
         return "", -1
     ret_val = line[running_offset:next_space_idx]
@@ -18,8 +18,8 @@ def next_word(line, running_offset):
 
 def parse_line(line):
     """ Parses a single line of Geneva output.
-    Line Format: Avg. Fitness 0.0: [TCP:options-sack:]-duplicate(duplicate(,duplicate),)-| \/  (Evaluated 12 times: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]) 
-    """   
+    Line Format: Avg. Fitness 0.0: [TCP:options-sack:]-duplicate(duplicate(,duplicate),)-| \/  (Evaluated 12 times: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    """
     running_offset = 0
 
     avg_str, running_offset = next_word(line, 0)
@@ -44,17 +44,17 @@ def parse_line(line):
     evaluations_arr = line[running_offset:].strip("][()").split(', ')
 
     return fitness_num, strategy, evaluation_num, evaluations_arr
-    
+
 df = pd.DataFrame(columns = ['Avg. Fitness', 'Strategy DNA', 'Evaluation Num', 'Evaluations'])
 
 with open(FILE_PATH) as file:
     for line in file:
         line = line.rstrip().replace("  ", " ")
-        if(line != "Results:" and len(line) != 0): 
+        if(len(line) != 0 and line[0]=="A"):
             fitness_num, strategy, evaluation_num, evaluations_arr = parse_line(line)
             df = df.append({
-                'Avg. Fitness' : fitness_num[:-1], 
-                'Strategy DNA' : strategy, 
+                'Avg. Fitness' : fitness_num[:-1],
+                'Strategy DNA' : strategy,
                 'Evaluation Num' : evaluation_num,
                 'Evaluations' : evaluations_arr},
                 ignore_index = True)
