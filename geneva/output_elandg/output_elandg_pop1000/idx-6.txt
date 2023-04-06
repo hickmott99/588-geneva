@@ -1,3 +1,5 @@
+IP:193.137.21.220   Website:linkedin.com
+
 2023-04-05 12:17:34 INFO:Logging results to trials/2023-04-05_12:17:34/logs
 2023-04-05 12:17:34 INFO:Strategies will only be allowed to use protocols: TCP
 2023-04-05 12:17:34 INFO:Initializing 1000 strategies with 0 input-action trees and 1 output-action trees of input size 2 and output size 2 for evolution over 10 generations.
