@@ -35,7 +35,7 @@ print("IPs exhibiting the most interference:")
 i = 0
 
 for ip in sortedIps:
-    if i < 5:
+    if i < 10:
         print(ip, len(ipDomainDict[ip]))
 
     domainSum += len(ipDomainDict[ip])
@@ -45,7 +45,7 @@ print("Domains exhibiting the most interference:")
 i = 0
 
 for domain in sortedDomains:
-    if i < 5:
+    if i < 10:
         print(domain, len(domainIpDict[domain]))
 
     ipSum += len(domainIpDict[domain])
