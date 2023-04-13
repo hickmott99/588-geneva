@@ -13,19 +13,25 @@ def main():
     column_names = ["Total Amplification", "Num Times Generated", "Average Amplification"]
     for column_name in column_names:
         df = df.sort_values(by=column_name, ascending=False)
+        print(f"Sorted by {column_name}")
         print(df.head())
         print(f"Min: {df[column_name].min()}, Max: {df[column_name].max()}")
         # hist = df.hist(column=column_name)
         acr = ''.join([word[0] for word in column_name.split(' ')]).lower()
+        if column_name != "Num Times Generated":
+            plt.scatter(df[column_name], df["Num Times Generated"])
+            plt.savefig(PLOTS_DIR + acr + "_sp" + ".png")
+            plt.clf()
+        # else:
         plot_ = sns.countplot(x=df[column_name])
         num_ticks = len(df[column_name].unique()) // 5
         plot_.xaxis.set_major_locator(ticker.MultipleLocator(num_ticks))
         plot_.xaxis.set_major_formatter(lambda x, pos: str(round(x) + 1))
         plt.savefig(PLOTS_DIR + acr + "_cp" + ".png")
         plt.clf()
-        plt.boxplot(df[column_name])
-        plt.savefig(PLOTS_DIR + acr + "_bp" + ".png")
-        plt.clf()
+        # plt.boxplot(df[column_name])
+        # plt.savefig(PLOTS_DIR + acr + "_bp" + ".png")
+        # plt.clf()
 
     # df_ta = df.sort_values(by="Total Amplification", ascending=False)
     # print(df_ta.head())

@@ -39,6 +39,7 @@ class Engine():
                        server_side=False,
                        output_directory="trials",
                        log_level="info",
+                       file_log_level="info",
                        enabled=True,
                        in_queue_num=None,
                        out_queue_num=None,
@@ -47,7 +48,7 @@ class Engine():
                        demo_mode=False):
         """
         Args:
-            server_port (int): The port the engine will monitor
+            server_port (str): The port(s) the engine will monitor
             string_strategy (str): String representation of strategy DNA to apply to the network
             environment_id (str, None): ID of the given strategy
             server_side (bool, False): Whether or not the engine is running on the server side of the connection
@@ -89,6 +90,7 @@ class Engine():
                                                "engine",
                                                self.environment_id,
                                                log_level=log_level,
+                                               file_log_level=file_log_level,
                                                demo_mode=demo_mode)
         # Warn if these are not provided
         if not environment_id:
@@ -132,9 +134,11 @@ class Engine():
 
     def __exit__(self, exc_type, exc_value, tb):
         """
-        Allows the engine to be used as a context manager; simply stops the engine
-        if enabled.
+        Allows the engine to be used as a context manager
+        Stops the engine if enabled and closes loggers.
         """
+        for handler in self.logger.handlers:
+            handler.close()
         if self.enabled:
             self.shutdown_nfqueue()
 
@@ -221,17 +225,25 @@ class Engine():
             add_or_remove = "D"
         cmds = []
         for proto in ["tcp", "udp"]:
-            cmds += ["iptables -%s %s -p %s --%s %d -j NFQUEUE --queue-num %d" %
-                    (add_or_remove, out_chain, proto, port1, self.server_port, self.out_queue_num),
-                    "iptables -%s %s -p %s --%s %d -j NFQUEUE --queue-num %d" %
-                    (add_or_remove, in_chain, proto, port2, self.server_port, self.in_queue_num)]
+            # Need to change the match rule if multiple ports are specified
+            # Default match policy is the protocol
+            match_policy = proto
+            # Don't need to do any checking on the port since the iptables command can error, closing the engine
+            # Change server port to str for backwards compatibility calling engine directly with an int
+            if any(x in str(self.server_port) for x in [":", ","]):
+                match_policy = "multiport"
+
+            cmds += ["iptables -%s %s -p %s --match %s --%s %s -j NFQUEUE --queue-num %d" %
+                    (add_or_remove, out_chain, proto, match_policy, port1, self.server_port, self.out_queue_num),
+                    "iptables -%s %s -p %s --match %s --%s %s -j NFQUEUE --queue-num %d" %
+                    (add_or_remove, in_chain, proto, match_policy, port2, self.server_port, self.in_queue_num)]
             # If this machine is acting as a middlebox, we need to add the same rules again
             # in the opposite direction so that we can pass packets back and forth
             if self.forwarder:
-                cmds += ["iptables -%s %s -p %s --%s %d -j NFQUEUE --queue-num %d" %
-                    (add_or_remove, out_chain, proto, port2, self.server_port, self.out_queue_num),
-                    "iptables -%s %s -p %s --%s %d -j NFQUEUE --queue-num %d" %
-                    (add_or_remove, in_chain, proto, port1, self.server_port, self.in_queue_num)]
+                cmds += ["iptables -%s %s -p %s --match %s --%s %s -j NFQUEUE --queue-num %d" %
+                    (add_or_remove, out_chain, proto, match_policy, port2, self.server_port, self.out_queue_num),
+                    "iptables -%s %s -p %s --match %s --%s %s -j NFQUEUE --queue-num %d" %
+                    (add_or_remove, in_chain, proto, match_policy, port1, self.server_port, self.in_queue_num)]
 
         for cmd in cmds:
             self.logger.debug(cmd)
@@ -409,7 +421,8 @@ def get_args():
     Sets up argparse and collects arguments.
     """
     parser = argparse.ArgumentParser(description='The engine that runs a given strategy.')
-    parser.add_argument('--server-port', type=int, action='store', required=True)
+    # Store a string, not int, in case of port ranges/lists. The iptables command checks the port var
+    parser.add_argument('--server-port', action='store', required=True)
     parser.add_argument('--environment-id', action='store', help="ID of the current strategy under test")
     parser.add_argument('--sender-ip', action='store', help="IP address of sending machine, used for NAT")
     parser.add_argument('--routing-ip', action='store', help="Public IP of this machine, used for NAT")
@@ -420,7 +433,10 @@ def get_args():
     parser.add_argument('--server-side', action='store_true', help='Enable if this is running on the server side')
     parser.add_argument('--log', action='store', default="debug",
                         choices=("debug", "info", "warning", "critical", "error"),
-                        help="Sets the log level")
+                        help="Sets the log level for the console")
+    parser.add_argument('--file-log', action='store', default="debug",
+                        choices=("debug", "info", "warning", "critical", "error"),
+                        help="Sets the log level for the log file")
     parser.add_argument('--no-save-packets', action='store_false', help='Disables recording captured packets')
     parser.add_argument("--in-queue-num", action="store", help="NfQueue number for incoming packets", default=1, type=int)
     parser.add_argument("--out-queue-num", action="store", help="NfQueue number for outgoing packets", default=None, type=int)
@@ -434,29 +450,26 @@ def main(args):
     """
     Kicks off the engine with the given arguments.
     """
-    try:
-        nat_config = {}
-        if args.get("sender_ip") and args.get("routing_ip") and args.get("forward_ip"):
-            nat_config = {"sender_ip" : args["sender_ip"],
-                          "routing_ip" : args["routing_ip"],
-                          "forward_ip" : args["forward_ip"]}
+    nat_config = {}
+    if args.get("sender_ip") and args.get("routing_ip") and args.get("forward_ip"):
+        nat_config = {"sender_ip": args["sender_ip"],
+                      "routing_ip": args["routing_ip"],
+                      "forward_ip": args["forward_ip"]}
 
-        eng = Engine(args["server_port"],
-                     args["strategy"],
-                     environment_id=args["environment_id"],
-                     server_side=args["server_side"],
-                     output_directory=args["output_directory"],
-                     forwarder=nat_config,
-                     log_level=args["log"],
-                     in_queue_num=args["in_queue_num"],
-                     out_queue_num=args["out_queue_num"],
-                     save_seen_packets=args["no_save_packets"],
-                     demo_mode=args["demo_mode"])
-        eng.initialize_nfqueue()
-        while True:
-            time.sleep(0.5)
-    finally:
-        eng.shutdown_nfqueue()
+    with Engine(args["server_port"],
+                args["strategy"],
+                environment_id=args["environment_id"],
+                server_side=args["server_side"],
+                output_directory=args["output_directory"],
+                forwarder=nat_config,
+                log_level=args["log"],
+                file_log_level=args["file_log"],
+                in_queue_num=args["in_queue_num"],
+                out_queue_num=args["out_queue_num"],
+                save_seen_packets=args["no_save_packets"],
+                demo_mode=args["demo_mode"]):
+
+        threading.Event().wait()  # Wait forever
 
 
 if __name__ == "__main__":

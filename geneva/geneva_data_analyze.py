@@ -2,8 +2,8 @@ import os
 import csv
 import pandas as pd
 
-OUTPUT_DIR = "./output_hickmott/"
-OUTPUT_FILE = "./output_hickmott/OUTOUT.csv"
+OUTPUT_DIR = "./output_elandg/output_elandg_pop1000"
+OUTPUT_FILE = "./output_elandg/output_elandg_pop1000/OUTOUT.csv"
 
 
 strategy_found_in_all = {}

@@ -1,8 +1,8 @@
 import pandas as pd
 import time
 
-FILE_PATH = "./output_hickmott/idx-256.txt"
-OUTPUT_FILE = "./output_hickmott/idx-256.csv"
+FILE_PATH = "./output_elandg/output_elandg_pop250/idx-29.txt"
+OUTPUT_FILE = "./output_elandg/output_elandg_pop250/idx-29.csv"
 
 def next_word(line, running_offset):
     """ Returns substring until next space char of line after running_offset index. """
