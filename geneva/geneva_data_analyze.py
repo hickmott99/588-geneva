@@ -2,8 +2,8 @@ import os
 import csv
 import pandas as pd
 
-OUTPUT_DIR = "./output_hickmott/"
-OUTPUT_FILE = "./output_hickmott/OUTOUT.csv"
+OUTPUT_DIR = "./output_hickmott/output_hickmott_pop250_1/"
+OUTPUT_FILE = "./output_hickmott/output_hickmott_pop250_1/OUTOUT.csv"
 
 
 strategy_found_in_all = {}
@@ -37,8 +37,8 @@ for ii, val in enumerate(sort):
         average += prod
 
 
-    sort[ii] = [sort[ii][0], average, len(sort[ii][1])]
+    sort[ii] = [sort[ii][0], average, len(sort[ii][1]), average/len(sort[ii][1])]
 
-df = pd.DataFrame(columns = ['Strategy DNA', 'Average', 'Data'], data=sort)
+df = pd.DataFrame(columns = ['Strategy DNA', 'Total Amplification', 'Num Times Generated', 'Average Amplification'], data=sort)
 df.to_csv(OUTPUT_FILE, encoding='utf-8', index=False)
 
