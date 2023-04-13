@@ -14,7 +14,7 @@
 #include "module_tcp_synscan.h"
 
 #ifndef HOST
-#define HOST "freedomhouse.org"
+#define HOST "www.youporn.com"
 #endif
 //#define TCP_FLAGS TH_PUSH | TH_ACK
 #define TCP_FLAGS TH_SYN
@@ -30,7 +30,7 @@ static uint32_t num_ports;
 
 static int forbiddenscan_global_initialize(struct state_conf *state)
 {
-    printf("Starting module. Packet out size: %d\n", TOTAL_LEN);
+    fprintf(stderr, "Starting module. Packet out size: %d\n", TOTAL_LEN);
     num_ports = state->source_port_last - state->source_port_first + 1;
     return EXIT_SUCCESS;
 }

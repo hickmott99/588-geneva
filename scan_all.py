@@ -35,7 +35,7 @@ try:
         time.sleep(1)
         os.system("mv src/probe_modules/.backup src/probe_modules/module_forbidden_scan.c")
         time.sleep(1)
-        os.system("cmake . && make -j4 && sudo src/zmap -M forbidden_scan -p 80 -f \"saddr,len,payloadlen,flags,validation_type\" -o %s/%s_%s.csv -O csv -B 350M" % (path, config, host))
+        os.system("cmake . && make -j4 && sudo src/zmap -M forbidden_scan -p 80 -s 3 -n 100000000 -f \"saddr,len,payloadlen,flags,validation_type\" -o %s/%s_%s.csv -O csv -B 350M 2>> %s.txt" % (path, config, host, config))
         print("Scan for %s finished" % host)
         print("Sleeping for 60 seconds before next scan.")
         time.sleep(60)
