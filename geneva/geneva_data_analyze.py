@@ -2,15 +2,15 @@ import os
 import csv
 import pandas as pd
 
-OUTPUT_DIR = "./output_elandg/output_elandg_pop1000"
-OUTPUT_FILE = "./output_elandg/output_elandg_pop1000/OUTOUT.csv"
+INPUT_DIR = "./output_hickmott/output_hickmott_pop250_1/"
+OUTPUT_FILE = "./output_hickmott/CooperFinalOutput.csv"
 
 
 strategy_found_in_all = {}
 
-for ii, file in enumerate(os.listdir(OUTPUT_DIR)):
+for ii, file in enumerate(os.listdir(INPUT_DIR)):
     if file.startswith("idx") and file[-3:]=="csv":
-        file_path = OUTPUT_DIR + file
+        file_path = INPUT_DIR + file
 
         with open(file_path) as file:
             csv_reader = csv.reader(file, delimiter=',')
@@ -37,8 +37,8 @@ for ii, val in enumerate(sort):
         average += prod
 
 
-    sort[ii] = [sort[ii][0], average, len(sort[ii][1])]
+    sort[ii] = [sort[ii][0], average, len(sort[ii][1]), average/len(sort[ii][1])]
 
-df = pd.DataFrame(columns = ['Strategy DNA', 'Average', 'Data'], data=sort)
+df = pd.DataFrame(columns = ['Strategy DNA', 'Total Amplification', 'Num Times Generated', 'Average Amplification'], data=sort)
 df.to_csv(OUTPUT_FILE, encoding='utf-8', index=False)
 

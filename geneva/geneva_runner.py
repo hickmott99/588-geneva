@@ -2,8 +2,8 @@ import subprocess
 import csv
 
 # constants
-COOPER_START_IDX = 0
-parent_output_dir = "./output_elandg/output_elandg_pop250_1"
+COOPER_START_IDX = 262
+parent_output_dir = "./output_hickmott/output_hickmott_pop250_1"
 csv_path = "../quack/shuffled_genevadata.csv"
 
 
