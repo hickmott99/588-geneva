@@ -1,8 +1,11 @@
 import pandas as pd
 import time
+import os
 
-FILE_PATH = "./output_elandg/output_elandg_pop250/idx-29.txt"
-OUTPUT_FILE = "./output_elandg/output_elandg_pop250/idx-29.csv"
+### Converts idx-*.txt files in INPUT_DIR to idx-*.csv ###
+
+INPUT_DIR = "./output_hickmott/output_hickmott_pop250_1/"
+
 
 def next_word(line, running_offset):
     """ Returns substring until next space char of line after running_offset index. """
@@ -45,20 +48,31 @@ def parse_line(line):
 
     return fitness_num, strategy, evaluation_num, evaluations_arr
 
-df = pd.DataFrame(columns = ['Avg. Fitness', 'Strategy DNA', 'Evaluation Num', 'Evaluations'])
 
-with open(FILE_PATH) as file:
-    for line in file:
-        line = line.rstrip().replace("  ", " ")
-        if(len(line) != 0 and line[0]=="A"):
-            fitness_num, strategy, evaluation_num, evaluations_arr = parse_line(line)
-            evaluations_arr = [eval(i) for i in evaluations_arr]
+def parse_single_output(file_path):
+    OUTPUT_FILE = file_path[:-3]+"csv" # "./output_hickmott/output_hickmott_pop250_1/idx-153.csv"
 
-            df = df.append({
-                'Avg. Fitness' : fitness_num[:-1],
-                'Strategy DNA' : strategy,
-                'Evaluation Num' : evaluation_num,
-                'Evaluations' : evaluations_arr},
-                ignore_index = True)
 
-df.to_csv(OUTPUT_FILE, encoding='utf-8', index=False)
+    df = pd.DataFrame(columns = ['Avg. Fitness', 'Strategy DNA', 'Evaluation Num', 'Evaluations'])
+
+    with open(file_path) as file:
+        for line in file:
+            line = line.rstrip().replace("  ", " ")
+            if(len(line) != 0 and line[0]=="A"):
+                fitness_num, strategy, evaluation_num, evaluations_arr = parse_line(line)
+                evaluations_arr = [eval(i) for i in evaluations_arr]
+
+                df = df.append({
+                    'Avg. Fitness' : fitness_num[:-1],
+                    'Strategy DNA' : strategy,
+                    'Evaluation Num' : evaluation_num,
+                    'Evaluations' : evaluations_arr},
+                    ignore_index = True)
+
+    df.to_csv(OUTPUT_FILE, encoding='utf-8', index=False)
+
+
+for ii, file in enumerate(os.listdir(INPUT_DIR)):
+    if file.startswith("idx") and file[-3:]=="txt":
+        file_path = INPUT_DIR + file
+        parse_single_output(file_path)
