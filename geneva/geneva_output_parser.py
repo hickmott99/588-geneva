@@ -5,6 +5,7 @@ import os
 ### Converts idx-*.txt files in INPUT_DIR to idx-*.csv ###
 
 INPUT_DIR = "./output_hickmott/output_hickmott_pop250_1/"
+INPUT_DIR = "./output_elandg/output_elandg_pop250_1/"
 
 
 def next_word(line, running_offset):
