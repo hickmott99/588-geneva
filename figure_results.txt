@@ -1,0 +1,47 @@
+Number of unique ips: 923536
+
+*****
+Saved figure1.png
+*****
+
+*****
+Number of ips in quack: 257
+Number of quack ips scanned: 0
+*****
+
+*****
+Saved figure4.png
+*****
+
+*****
+Saved figure5.png
+*****
+
+*****
+Loaded country information for 16767 amplifying IPs
+Saved figure8.png
+*****
+
+*****
+table 2
+[['None' 'SYN' '<SYN;PSH>' '<SYN;PSH+ACK>']
+ ['example.com' '1.234935' '3.433801' '4.006163']
+ ['plus.google.com' '1.198815' '3.036562' '3.469521']
+ ['www.bittorrent.com' '3.303144' '3.134081' '4.684043']
+ ['www.roxypalace.com' '1.288725' '7.691171' '9.010126']
+ ['www.survive.org.uk' '1.169418' '7.484362' '7.100803']
+ ['www.youporn.com' '1.33556' '3.546209' '5.155728']
+ ['empty_url_' '1.180945' '3.322454' '3.234679']]
+*****
+
+*****
+table 3
+[['None' 'SYN' '<SYN;PSH>' '<SYN;PSH+ACK>']
+ ['example.com' '48' '5' '104']
+ ['plus.google.com' '52' '9' '53']
+ ['www.bittorrent.com' '112' '29' '149']
+ ['www.roxypalace.com' '50' '1551' '1674']
+ ['www.survive.org.uk' '37' '1679' '1579']
+ ['www.youporn.com' '67' '43' '194']
+ ['empty_url_' '3' '1' '7']]
+*****
