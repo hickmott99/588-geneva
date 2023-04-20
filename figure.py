@@ -73,7 +73,7 @@ print('Number of unique ips: {}'.format(len(all_ips)))
 
 # figure 1: maximum amplification factor per ip based on multiple scans
 print('\n*****')
-y = amp_factor.mean(axis=(1,2))
+y = amp_factor.max(axis=(1,2))
 x = np.array(range(len(y)))+1
 y_old = 10**(8-(8/6)*np.log10(x))
 desc_order = np.argsort(y)[::-1]
@@ -261,3 +261,4 @@ table = np.concatenate((np.asarray(urls).reshape(-1,1), table), axis=1)
 table = np.concatenate((np.asarray(['None']+[scan_to_flag[it] for it in scans]).reshape(1,-1),table), axis=0)
 print(table)
 print('*****')
+breakpoint()
